@@ -30,24 +30,18 @@ def move(x,y):
     mouse.position = (x, y)
     
 def selectKey(key, time = 0.03):
-    if key == "escape":
-        down(key)
-        sleep(time)
-        up(key)
-        sleep(time)
-    else:
-        keyboard.press(key)
-        sleep(time)
-        keyboard.release(key)
-        sleep(time)
+    keyboard.press(key)
+    sleep(time)
+    keyboard.release(key)
+    sleep(time)
 
-def feed(building, ammount=5, time = 0.03):
+def feed(building, ammount=5, time = 0.02):
     #move to ammo slot
     move(x=pos_dict[building][0],y=pos_dict[building][1])
-    for i in range(ammount):
+    for i in range(ammount+1):
         click(right)
         sleep(time)
-    selectKey("escape")
+    selectKey("'")
           
 def build(dirrection,time = 0.03):
     #place turrets
@@ -58,15 +52,14 @@ def build(dirrection,time = 0.03):
         sleep(time)
         click()
 
-def quick_defense(dirrection):
-    build("w")
+def quick_defense(dirrection, time = 0.05):
     build("w")
     selectKey("2")
     for pos in turrets_build[dirrection]:
         move(pos[0],pos[1])
-        sleep(0.03)
+        sleep(time)
         click()
-        sleep(0.03)
+        sleep(time)
         feed("turret")
     
 while True:
