@@ -1,0 +1,78 @@
+from keyboard import read_key as pressed 
+from time import sleep, time as timer
+from pynput import keyboard
+from pynput import mouse
+from pydirectinput import keyDown as down, keyUp as up,click
+
+pos_dict = {
+    "turret" : [1314, 515]
+            }
+
+color_dict = {
+        "red_not_build" : [255, 94, 0]
+    }
+          
+turrets_build = {
+    "a" : [[1172, 599], [1151, 429]],
+    "w" : [[1190, 370],[1386, 371]],
+    "d" : [[1449, 376],[1469, 595]],
+    "s" : [[1407, 681],[1181, 672]]
+}
+left = mouse.Button.left
+right = mouse.Button.right
+mouse = mouse.Controller()
+keyboard = keyboard.Controller()
+
+def click(button=left):
+    mouse.click(button=button)
+
+def move(x,y):
+    mouse.position = (x, y)
+    
+def selectKey(key, time = 0.03):
+    if key == "escape":
+        down(key)
+        sleep(time)
+        up(key)
+        sleep(time)
+    else:
+        keyboard.press(key)
+        sleep(time)
+        keyboard.release(key)
+        sleep(time)
+
+def feed(building, ammount=5, time = 0.03):
+    #move to ammo slot
+    move(x=pos_dict[building][0],y=pos_dict[building][1])
+    for i in range(ammount):
+        click(right)
+        sleep(time)
+    selectKey("escape")
+          
+def build(dirrection,time = 0.03):
+    #place turrets
+    selectKey("q")
+    selectKey("1")
+    for pos in turrets_build[dirrection]:
+        move(pos[0],pos[1])
+        sleep(time)
+        click()
+
+def quick_defense(dirrection):
+    build("w")
+    build("w")
+    selectKey("2")
+    for pos in turrets_build[dirrection]:
+        move(pos[0],pos[1])
+        sleep(0.03)
+        click()
+        sleep(0.03)
+        feed("turret")
+    
+while True:
+    if pressed() == ".":
+        start = timer()
+        quick_defense("w")
+        end = timer()
+        print(end-start)
+        break
