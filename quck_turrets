@@ -52,7 +52,7 @@ def build(dirrection,time = 0.03):
         sleep(time)
         click()
 
-def quick_defense(dirrection, time = 0.05):
+def quick_defense(dirrection, time = 0.04):
     build("w")
     selectKey("2")
     for pos in turrets_build[dirrection]:
