@@ -2,16 +2,11 @@ from keyboard import read_key as pressed
 from time import sleep, time as timer
 from pynput import keyboard
 from pynput import mouse
-from pydirectinput import keyDown as down, keyUp as up,click
 
 pos_dict = {
     "turret" : [1314, 515]
             }
 
-color_dict = {
-        "red_not_build" : [255, 94, 0]
-    }
-          
 turrets_build = {
     "a" : [[1172, 599], [1151, 429]],
     "w" : [[1190, 370],[1386, 371]],
@@ -64,8 +59,8 @@ def quick_defense(dirrection, time = 0.04):
     
 while True:
     if pressed() == ".":
-        start = timer()
+        #start = timer()
         quick_defense("w")
-        end = timer()
-        print(end-start)
-        break
+        sleep(1)
+        #end = timer()
+        #print(end-start)
