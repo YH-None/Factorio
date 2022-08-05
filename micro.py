@@ -1,13 +1,36 @@
 from keyboard import read_key as pressed 
 from time import sleep, time as timer
-from pynput import keyboard
-from pynput import mouse
-import pixel_pos
+from pynput import keyboard, mouse
+from data import data
+import cv2, mss, numpy
 
 left, right = mouse.Button.left, mouse.Button.right
 mouse, keyboard= mouse.Controller(),keyboard.Controller()
+last_move = "w"
+is_turet = False
 
-def wait(time=0.05):
+def loadImages(turret = False):
+    images = {}
+    if turret:
+        images["turret"] = turret_template = cv2.imread('Bots/bots/screens/turret_template.png')
+    return images
+   
+images = loadImages(turret=True)   
+        
+def match(object):
+    sct = mss.mss()
+    scr = numpy.array(sct.grab(data.img_detection["dimensions"]))
+    # Cut off alpha
+    scr_remove = scr[:,:,:3]
+
+    result = cv2.matchTemplate(scr_remove, images[object], cv2.TM_CCOEFF_NORMED)
+    
+    _, max_val, _, _ = cv2.minMaxLoc(result)
+    if max_val > 0.75:
+        return True
+    return False
+
+def wait(time=0.03):
     sleep(time)
     
 def click(button=left):
@@ -33,15 +56,19 @@ def build(positions, multi = True):
     else:
         move_click(positions)
 
-def open(position, slot_pos):
-    move(position)
-    wait()
+def open(position=None, slot_pos=data.slot_pos["turret"]):
+    if position != None:
+        move(position)
+        wait()
     click()
     wait()
     move(slot_pos)
     wait()
 
-def feed_slot(ammount=5):
+def feed_slot(ammount=5, slot_pos = None):
+    if slot_pos != None:
+        move(slot_pos)
+        wait()
     for i in range(ammount):
         click(right)
         
@@ -51,15 +78,25 @@ def build_turrets(positions,multi=True,ammo=5):
     wait()
     selectKey("2")
     for pos in positions:
-        open(pos,pixel_pos.slot_pos["turret"])
-        wait()
-        feed_slot()
-        selectKey("'")
-        wait()
-
+        move(pos)
+        wait(0.07)        
+        if match("turret"):
+            #print("found")
+            open()
+            wait()
+            feed_slot()
+            selectKey("'")
+            wait()
+        #else:
+            #print("not found")
 while True:
-    if pressed() == ".":
-        #start = timer()
-        build_turrets(pixel_pos.turrets_build["w"])
-        #end = timer()
-        #rint(end-start)
+    pressed_key = pressed()  
+    if pressed_key in data.move_keys:
+        last_move = pressed_key
+        
+    if pressed_key == ".":
+        keyboard.release(last_move)
+        start = timer()
+        build_turrets(data.turrets_build[last_move])
+        end = timer()
+        print(end-start)
