@@ -3,7 +3,7 @@ import mss.tools
 from keyboard import read_key as pressed 
 from time import sleep
 
-location = "C:/Users/adam7/Desktop/Code/Bots/bots/screens/"
+location = "C:/Users/path"
 screen_w,screen_h = 2560,1080
 
 #top left [0,0], bottom right[screen size]
