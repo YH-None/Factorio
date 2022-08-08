@@ -1,4 +1,3 @@
-import data
 import cv2, mss, numpy, data
 
 def imgs(turret = False):
